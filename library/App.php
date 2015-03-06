@@ -32,4 +32,8 @@ class App {
 		return self::$_app;
 	}
 	
+	public function getResource ($resource){
+		return array_key_exists($resource, $this->_aConfig)?$this->_aConfig[$resource]:false;
+	}
+	
 }
