@@ -125,6 +125,9 @@ class Twitter_Tweet extends Db_AbstractSupport {
 	
 	public function save ($aForcedParams = null)
 	{
+		 if (!isset($this->user)){
+		 	return false;
+		 }
 	     $id = $this->user->save();
 	     $aForcedParams = $this->toArray();
 	     $aForcedParams["id_user"] = $id;

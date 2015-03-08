@@ -4,7 +4,7 @@
   $aArguments = $_SERVER["argv"];
   
   if (count ($aArguments)<2)
-  	throw new Exception("Falta el Hashtag!");
+  	die("Falta el Hashtag!");
   
   $oTwitter = new Twitter();
   
