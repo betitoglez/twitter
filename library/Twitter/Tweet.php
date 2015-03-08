@@ -1,12 +1,12 @@
 <?php
-class Twitter_Tweet {
-	private $id;
-	private $user;
-	private $text;
-	private $retweeted;
-	private $created;
+class Twitter_Tweet extends Db_AbstractSupport {
+	protected $id;
+	protected $user;
+	protected $text;
+	protected $retweeted;
+	protected $created;
 	
-	
+	protected $oDB;
 	
 	public static function getCollection(Array $aTweets) {
 		$aCollection = array ();
@@ -96,28 +96,41 @@ class Twitter_Tweet {
 	
 	public function __construct(Array $aAttrs = array()) {
 
-		if (! in_array ( "id", $aAttrs ))
+		if (! array_key_exists ( "id", $aAttrs ))
 			throw new Exception ( "El ID del tweet es obligatorio" );
 		
 		$this->user = in_array ( "user", $aAttrs ) ? new Twitter_User($aAttrs["user"]) : null;
 		
-		$this->id = ( int ) $aAttrs ["id"];
-		$this->text = in_array ( "text", $aAttrs ) ? $aAttrs ["text"] : "";
-		$this->retweeted = in_array ( "retweeted", $aAttrs ) ? ( bool ) $aAttrs ["retweeted"] : FALSE;
-		$this->created = in_array ( "created_at", $aAttrs ) ? strtotime($aAttrs ["created_at"]) : time();
+		$this->id = $aAttrs ["id"];
+		$this->text = array_key_exists ( "text", $aAttrs ) ? utf8_decode($aAttrs ["text"]) : "";
+		$this->retweeted = array_key_exists ( "retweeted", $aAttrs ) ? ( bool ) $aAttrs ["retweeted"] : FALSE;
+		$this->created = array_key_exists ( "created_at", $aAttrs ) ? date("Y-m-d H:i:s",strtotime($aAttrs ["created_at"])) : date("Y-m-d H:i:s");
+		
+		$this->oDb = new Db_Tweet();
 	}
+	
+	
 	
 
 	
 	public function toArray() {
 		return array (
-				"id" => $this->id,
-				"user" => $this->user->toArray(),
+				"id_tweet" => $this->id,
+				"id_user" => $this->user->toArray(),
 				"text" => $this->text,
 				"created" => $this->created,
 				"retweeted" => $this->retweeted 
 		);
 	}
+	
+	public function save ($aForcedParams = null)
+	{
+	     $id = $this->user->save();
+	     $aForcedParams = $this->toArray();
+	     $aForcedParams["id_user"] = $id;
+	     return parent::save($aForcedParams);
+	}
+	
 	public function __toString() {
 		return json_encode ( $this->toArray () );
 	}

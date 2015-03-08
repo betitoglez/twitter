@@ -1,13 +1,31 @@
 <?php
-class Twitter_User {
-	private $name;
-	private $location;
-	private $image;
-	private $tweets;
-	private $friends;
-	private $screenName;
+class Twitter_User extends Db_AbstractSupport {
+	protected $name;
+	protected $location;
+	protected $image;
+	protected $tweets;
+	protected $friends;
+	protected $screenName;
+	protected $id;
 	
 	
+	protected $oDb;
+	
+	
+	/**
+	 * @return the $id
+	 */
+	public function getId() {
+		return $this->id;
+	}
+
+	/**
+	 * @param number $id
+	 */
+	public function setId($id) {
+		$this->id = $id;
+	}
+
 	/**
 	 * @return the $name
 	 */
@@ -93,29 +111,35 @@ class Twitter_User {
 	}
 
 	public function __construct(Array $aAttrs) {
-		if (! in_array ( "id", $aAttrs ))
+
+		if (! array_key_exists ( "id", $aAttrs ))
 			throw new Exception ( "El ID del usuario es obligatorio" );
 		
-		$this->id  = (int) $aAttrs ["id"];
+		$this->id  =  $aAttrs ["id"];
 		
-		$this->name = in_array ( "name", $aAttrs ) ? $aAttrs ["name"] : "";
-		$this->image = in_array ( "image", $aAttrs ) ? $aAttrs ["image"] : "";
-		$this->location = in_array ( "location", $aAttrs ) ? $aAttrs ["location"] : "";
-		$this->screenName = in_array ( "screen_name", $aAttrs ) ? $aAttrs ["screen_name"] : "";
+		$this->name = array_key_exists ( "name", $aAttrs ) ? utf8_decode($aAttrs ["name"]) : "";
+		$this->image = array_key_exists ( "profile_image_url", $aAttrs ) ? $aAttrs ["profile_image_url"] : "";
+		$this->location = array_key_exists ( "location", $aAttrs ) ? utf8_decode($aAttrs ["location"]) : "";
+		$this->screenName = array_key_exists ( "screen_name", $aAttrs ) ? $aAttrs ["screen_name"] : "";
 		
-		$this->tweets = in_array ( "statuses_count", $aAttrs ) ? (int) $aAttrs ["statuses_count"] : 0;
-		$this->friends = in_array ( "friends_count", $aAttrs ) ? (int) $aAttrs ["friends_count"] : 0;
+		$this->tweets = array_key_exists ( "statuses_count", $aAttrs ) ? (int) $aAttrs ["statuses_count"] : 0;
+		$this->friends = array_key_exists ( "friends_count", $aAttrs ) ? (int) $aAttrs ["friends_count"] : 0;
+		
+		$this->oDb = new Db_User();
 		
 	}
 	
 	public function toArray (){
 		return array(
+				"id_user"=>$this->id,
 				"name"=> $this->name,
 				"location"=>$this->location,
 				"image"=>$this->image,
 				"tweets"=>$this->tweets,
 				"friends"=>$this->friends,
-				"screenName"=>$this->screenName
+				"screen"=>$this->screenName
 		);
 	}
+	
+	
 }
