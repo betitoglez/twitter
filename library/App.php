@@ -4,6 +4,7 @@ class App {
 	private static $_app;
 	
 	private $_aConfig;
+	private $_oCache;
 	
 	/**
 	 * @return array $_aConfig
@@ -17,11 +18,12 @@ class App {
 	 */
 	public function setConfig(Array $_aConfig) {
 		$this->_aConfig = $_aConfig;
+		return $this;
 	}
 
-	public function __construct()
+	private function __construct()
 	{
-		$this->_aConfig = array();
+		$this->_aConfig = array();				
 	}
 	
 	public static function getApp()
@@ -34,6 +36,10 @@ class App {
 	
 	public function getResource ($resource){
 		return array_key_exists($resource, $this->_aConfig)?$this->_aConfig[$resource]:false;
+	}
+	
+	public function run (){
+		Cache::getInstance()->addServer($this->_aConfig["memcache.host"], $this->_aConfig["memcache.port"]);
 	}
 	
 }
